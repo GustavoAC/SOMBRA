@@ -12,6 +12,8 @@ class Canvas {
   	std::shared_ptr<Pixel*> canvas;
 
     Pixel m_backgroundColor;
+    Pixel& getPixel(int x, int y);
+  
   public:
   	Canvas(int _width, int _height);
     Canvas(int _width, int _height, Pixel m_backgroundColor);

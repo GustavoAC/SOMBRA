@@ -1,5 +1,6 @@
 #include "canvas.h"
 #include "line.h"
+#include "circle.h"
 #include "point.h"
 
 int main(int argc, char const *argv[]) {
@@ -31,6 +32,10 @@ int main(int argc, char const *argv[]) {
 	c.draw(lld);
 	c.draw(llu);
 	c.draw(lul);
+
+    Circle cir(Point(50,50), 30);
+    c.draw(cir);
+
 
     // l1.draw(c);
     // l2.draw(c);

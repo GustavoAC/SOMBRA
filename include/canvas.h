@@ -4,6 +4,7 @@
 #include <fstream>
 #include "pixel.h"
 #include "point.h"
+#include "shape.h"
 
 class Canvas {
   private:
@@ -19,6 +20,7 @@ class Canvas {
     Canvas(int _width, int _height, Pixel m_backgroundColor);
 
     void clear();
+    void draw(Shape &shape);
     void setPixel(const Point &point, const Pixel &p);
     inline int getWidth() const;
     inline int getHeight() const;

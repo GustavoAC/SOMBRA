@@ -13,6 +13,10 @@ void Canvas::clear() {
 	for (int i = 0; i < m_width * m_height; i++) (*canvas)[i] = m_backgroundColor;
 }
 
+void Canvas::draw(Shape &shape) {
+	shape.draw(this);
+}
+
 void Canvas::setPixel(const Point &point, const Pixel &p) {
 	std::cout << "Painting position (" << (int) point.getX() << ", " << (int) point.getY() << ") with color (" << (int) p.getR() << ", " << (int) p.getG() << ", " << (int) p.getB() << ")\n";
 	if (point.getX() < m_width && point.getX() >= 0 && point.getY() < m_height && point.getY() >= 0) (*canvas)[point.getY() * m_width + point.getX()] = p;

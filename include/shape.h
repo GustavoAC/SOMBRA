@@ -1,8 +1,9 @@
 #pragma once
 
-#include "canvas.h"
+class Canvas;
 
 class Shape {
-public:
-	virtual void draw(Canvas &canvas) = 0;
+private:
+	virtual void draw(Canvas *canvas) = 0;
+	friend class Canvas;
 };

@@ -1,4 +1,5 @@
 #include "line.h"
+#include "canvas.h"
 #include <functional>
 #include <iostream>
 
@@ -7,7 +8,7 @@ Line::Line(const Point &_start, const Point &_end, const Pixel &_color)
 
 Line::Line(const Point &_start, const Point &_end) : Line(_start, _end, Pixel(0, 0, 0)) {}
 
-void Line::draw(Canvas &canvas) {
+void Line::draw(Canvas *canvas) {
     // if (isHorizontal()) {
     //     int step = (m_start.getX() < m_end.getX()) ? 1 : -1;
     //     for (int i = m_start.getX(); i != m_end.getX(); i += step)
@@ -23,16 +24,16 @@ void Line::draw(Canvas &canvas) {
         int lastY = m_start.getY();
 
         for (int i = m_start.getX(); i != m_end.getX(); i += step) {
-            canvas.setPixel(Point(i, lastY), m_color);
+            canvas->setPixel(Point(i, lastY), m_color);
             lastY += step;
         }
-        canvas.setPixel(m_end, m_color);
+        canvas->setPixel(m_end, m_color);
     } else {
         drawBresenham(canvas);
     }
 }
 
-void Line::drawBresenham(Canvas &canvas) {
+void Line::drawBresenham(Canvas *canvas) {
     int deltaX = m_end.getX() - m_start.getX();
     int deltaY = m_end.getY() - m_start.getY();
 
@@ -44,12 +45,12 @@ void Line::drawBresenham(Canvas &canvas) {
 
     std::function<void(int, int)> drawPoint;
     if (isXMaster)
-        drawPoint = ([this, &canvas](int master, int slave) {
-            canvas.setPixel(Point(master, slave), m_color);
+        drawPoint = ([this, canvas](int master, int slave) {
+            canvas->setPixel(Point(master, slave), m_color);
         });
     else
-        drawPoint = ([this, &canvas](int master, int slave) {
-            canvas.setPixel(Point(slave, master), m_color);
+        drawPoint = ([this, canvas](int master, int slave) {
+            canvas->setPixel(Point(slave, master), m_color);
         });
 
     Point *start, *end;

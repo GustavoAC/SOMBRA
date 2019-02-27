@@ -10,6 +10,7 @@ Line::Line(const Point &_start, const Point &_end, const Pixel &_color)
 Line::Line(const Point &_start, const Point &_end) : Line(_start, _end, Pixel(0, 0, 0)) {}
 
 void Line::draw(Canvas *canvas) {
+    std::cout << "Drawing line...\n\n";
     // if (isHorizontal()) {
     //     int step = (m_start.getX() < m_end.getX()) ? 1 : -1;
     //     for (int i = m_start.getX(); i != m_end.getX(); i += step)
@@ -30,7 +31,7 @@ void Line::draw(Canvas *canvas) {
         }
         canvas->setPixel(m_end, m_color);
     } else {
-        drawBresenham(canvas);
+        drawDDA(canvas);
     }
 }
 
@@ -54,26 +55,23 @@ void Line::drawDDA(Canvas *canvas) {
             canvas->setPixel(Point(slave, master), m_color);
         });
 
-    Point *start, *end;
-    if (getMasterParam(m_start) < getMasterParam(m_end)) {
-        start = &m_start;
-        end = &m_end;
-    } else {
-        start = &m_end;
-        end = &m_start;
-    }
-
+    int step = (getMasterParam(m_start) < getMasterParam(m_end))? 1 : -1;
+    
     int master;
     float dMaster, dSlave, slave, m;
-    dSlave = getSlaveParam(*end) - getSlaveParam(*start);
-    dMaster = getMasterParam(*end) - getMasterParam(*start);
-    m = dSlave/dMaster;
-    slave = getSlaveParam(*start);
+    dSlave = getSlaveParam(m_end) - getSlaveParam(m_start);
+    dMaster = getMasterParam(m_end) - getMasterParam(m_start);
+    m = dSlave/dMaster * step;
+    slave = getSlaveParam(m_start);
     
-    for(master = getMasterParam(*start); master <= getMasterParam(*end); master++ ) {
+    // Draw until right before end point
+    for(master = getMasterParam(m_start); master != getMasterParam(m_end); master += step) {
         drawPoint(master, slave);
-        slave += m;
+        slave += (m * step);
     }
+
+    // Draw endpoint
+    drawPoint(master, slave);
 }
 
 void Line::drawBresenham(Canvas *canvas) {

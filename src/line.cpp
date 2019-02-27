@@ -1,8 +1,8 @@
 #include "line.h"
-#include "canvas.h"
+#include <cmath>
 #include <functional>
 #include <iostream>
-#include <cmath>
+#include "canvas.h"
 
 Line::Line(const Point &_start, const Point &_end, const Pixel &_color)
     : m_start(_start), m_end(_end), m_color(_color) {}
@@ -31,7 +31,7 @@ void Line::draw(Canvas *canvas) {
         }
         canvas->setPixel(m_end, m_color);
     } else {
-        drawDDA(canvas);
+        drawBresenham(canvas);
     }
 }
 
@@ -55,19 +55,19 @@ void Line::drawDDA(Canvas *canvas) {
             canvas->setPixel(Point(slave, master), m_color);
         });
 
-    int step = (getMasterParam(m_start) < getMasterParam(m_end))? 1 : -1;
-    
+    int step = (getMasterParam(m_start) < getMasterParam(m_end)) ? 1 : -1;
+
     int master;
     float dMaster, dSlave, slave, m;
     dSlave = getSlaveParam(m_end) - getSlaveParam(m_start);
     dMaster = getMasterParam(m_end) - getMasterParam(m_start);
-    m = dSlave/dMaster * step;
+    m = dSlave / dMaster * step;
     slave = getSlaveParam(m_start);
-    
+
     // Draw until right before end point
-    for(master = getMasterParam(m_start); master != getMasterParam(m_end); master += step) {
+    for (master = getMasterParam(m_start); master != getMasterParam(m_end); master += step) {
         drawPoint(master, slave);
-        slave += (m * step);
+        slave += m;
     }
 
     // Draw endpoint
@@ -78,12 +78,14 @@ void Line::drawBresenham(Canvas *canvas) {
     int deltaX = m_end.getX() - m_start.getX();
     int deltaY = m_end.getY() - m_start.getY();
 
+    // sets function for retrieving correct master and slave coordinates
     bool isXMaster = (std::abs(deltaX) > std::abs(deltaY));
     auto getMasterParam = (isXMaster) ? ([](Point &p) -> int { return p.getX(); })
                                       : ([](Point &p) -> int { return p.getY(); });
     auto getSlaveParam = (isXMaster) ? ([](Point &p) -> int { return p.getY(); })
                                      : ([](Point &p) -> int { return p.getX(); });
 
+    // Draws a point using the correct coordinate system
     std::function<void(int, int)> drawPoint;
     if (isXMaster)
         drawPoint = ([this, canvas](int master, int slave) {
@@ -94,26 +96,30 @@ void Line::drawBresenham(Canvas *canvas) {
             canvas->setPixel(Point(slave, master), m_color);
         });
 
-    Point *start, *end;
-    if (getMasterParam(m_start) < getMasterParam(m_end)) {
-        start = &m_start;
-        end = &m_end;
-    } else {
-        start = &m_end;
-        end = &m_start;
-    }
+    // Calculates master and slave deltas
+    int deltaMaster = getMasterParam(m_end) - getMasterParam(m_start);
+    int deltaSlave = getSlaveParam(m_end) - getSlaveParam(m_start);
 
-    int deltaMaster = getMasterParam(*end) - getMasterParam(*start);
-    int deltaSlave = getSlaveParam(*end) - getSlaveParam(*start);
+    // Invert values if negative and sets correct step
+    int masterStep = (deltaMaster > 0) ? 1 : -1;
     int slaveStep = (deltaSlave > 0) ? 1 : -1;
 
     if (deltaSlave < 0) deltaSlave *= -1;
+    if (deltaMaster < 0) deltaMaster *= -1;
+    
+    // Initialize values
     int p = 2 * deltaSlave - deltaMaster;
-    int master = getMasterParam(*start);
-    int slave = getSlaveParam(*start);
+    int master = getMasterParam(m_start);
+    int slave = getSlaveParam(m_start);
 
+    // Sets for condition
+    auto forCondition = (getMasterParam(m_end) > getMasterParam(m_start))
+                            ? ([](int master, int limit) -> bool { return master <= limit; })
+                            : ([](int master, int limit) -> bool { return master >= limit; });
+
+    // Draw points
     drawPoint(master, slave);
-    for (; master <= getMasterParam(*end); master++) {
+    for (; forCondition(master, getMasterParam(m_end)); master += masterStep) {
         if (p < 0) {
             p += 2 * deltaSlave;
         } else {

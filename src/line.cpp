@@ -2,6 +2,7 @@
 #include "canvas.h"
 #include <functional>
 #include <iostream>
+#include <cmath>
 
 Line::Line(const Point &_start, const Point &_end, const Pixel &_color)
     : m_start(_start), m_end(_end), m_color(_color) {}
@@ -30,6 +31,48 @@ void Line::draw(Canvas *canvas) {
         canvas->setPixel(m_end, m_color);
     } else {
         drawBresenham(canvas);
+    }
+}
+
+void Line::drawDDA(Canvas *canvas) {
+    int deltaX = m_end.getX() - m_start.getX();
+    int deltaY = m_end.getY() - m_start.getY();
+
+    bool isXMaster = (std::abs(deltaX) > std::abs(deltaY));
+    auto getMasterParam = (isXMaster) ? ([](Point &p) -> int { return p.getX(); })
+                                      : ([](Point &p) -> int { return p.getY(); });
+    auto getSlaveParam = (isXMaster) ? ([](Point &p) -> int { return p.getY(); })
+                                     : ([](Point &p) -> int { return p.getX(); });
+
+    std::function<void(int, int)> drawPoint;
+    if (isXMaster)
+        drawPoint = ([this, canvas](int master, int slave) {
+            canvas->setPixel(Point(master, slave), m_color);
+        });
+    else
+        drawPoint = ([this, canvas](int master, int slave) {
+            canvas->setPixel(Point(slave, master), m_color);
+        });
+
+    Point *start, *end;
+    if (getMasterParam(m_start) < getMasterParam(m_end)) {
+        start = &m_start;
+        end = &m_end;
+    } else {
+        start = &m_end;
+        end = &m_start;
+    }
+
+    int master;
+    float dMaster, dSlave, slave, m;
+    dSlave = getSlaveParam(*end) - getSlaveParam(*start);
+    dMaster = getMasterParam(*end) - getMasterParam(*start);
+    m = dSlave/dMaster;
+    slave = getSlaveParam(*start);
+    
+    for(master = getMasterParam(*start); master <= getMasterParam(*end); master++ ) {
+        drawPoint(master, slave);
+        slave += m;
     }
 }
 

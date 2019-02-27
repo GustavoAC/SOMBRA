@@ -9,6 +9,7 @@ private:
 	Point m_end;
 	Pixel m_color;
 
+	void drawDDA(Canvas *canvas);
 	void drawBresenham(Canvas *canvas);
 	void draw(Canvas *canvas);
 

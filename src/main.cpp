@@ -24,14 +24,14 @@ int main(int argc, char const *argv[]) {
 	Line llu(Point(50,50), Point(5, 30), Pixel(255,0,255));
 	Line lul(Point(50,50), Point(30, 5), Pixel(100,200,100));
 
-	c.draw(lur);
-    c.draw(lru);
-    c.draw(lrd);
-	c.draw(ldr);
-	c.draw(ldl);
-	c.draw(lld);
-	c.draw(llu);
-	c.draw(lul);
+	// c.draw(lur);
+    // c.draw(lru);
+    // c.draw(lrd);
+	// c.draw(ldr);
+	// c.draw(ldl);
+	// c.draw(lld);
+	// c.draw(llu);
+	// c.draw(lul);
 
     Circle cir(Point(50,50), 30);
     c.draw(cir);

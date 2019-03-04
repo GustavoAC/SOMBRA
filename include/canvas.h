@@ -22,7 +22,8 @@ class Canvas {
     void clear();
     void draw(Shape &shape);
     void setPixel(const Point &point, const Pixel &p);
-    inline int getWidth() const;
-    inline int getHeight() const;
+    void floodFill(int x, int y, const Pixel &newColor, const Pixel &limitColor);
+    inline int getWidth() const { return m_width; }
+    inline int getHeight() const { return m_height; }
     void writeToFile(const std::string &filename);
 };

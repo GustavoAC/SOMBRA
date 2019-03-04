@@ -108,7 +108,7 @@ void Line::drawBresenham(Canvas *canvas) {
     if (deltaMaster < 0) deltaMaster *= -1;
     
     // Initialize values
-    int p = 2 * deltaSlave - deltaMaster;
+    int p = ((isXMaster)? 2 : -2) * deltaSlave - deltaMaster;
     int master = getMasterParam(m_start);
     int slave = getSlaveParam(m_start);
 

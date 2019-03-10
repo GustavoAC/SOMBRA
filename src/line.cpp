@@ -75,7 +75,8 @@ void Line::drawThickLine(Canvas *canvas) {
         Point endPos(m_end.getX() + masterPosDeviation, m_end.getY() + slavePosDeviation);
         Point endNeg(m_end.getX() + masterNegDeviation, m_end.getY() + slaveNegDeviation);
 
-        Polygon p(startPos, endPos, endNeg, startNeg, m_color, m_color);
+        Polygon p(startPos, endPos, endNeg, startNeg, m_color);
+        p.setFillColor(m_color);
         canvas->draw(p);
     } else {
         Point startPos(m_start.getX() + slavePosDeviation, m_start.getY() + masterPosDeviation);
@@ -83,7 +84,8 @@ void Line::drawThickLine(Canvas *canvas) {
         Point endPos(m_end.getX() + slavePosDeviation, m_end.getY() + masterPosDeviation);
         Point endNeg(m_end.getX() + slaveNegDeviation, m_end.getY() + masterNegDeviation);
 
-        Polygon p(startPos, endPos, endNeg, startNeg, m_color, m_color);
+        Polygon p(startPos, endPos, endNeg, startNeg, m_color);
+        p.setFillColor(m_color);
         canvas->draw(p);
     }
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 #include "canvas.h"
 #include "circle.h"
 #include "line.h"
@@ -8,127 +9,44 @@
 #include "polyline.h"
 #include "tinyxml.h"
 
-const unsigned int NUM_INDENTS_PER_SPACE = 2;
-
-const char* getIndent(unsigned int numIndents) {
-    static const char* pINDENT = "                                      + ";
-    static const unsigned int LENGTH = strlen(pINDENT);
-    unsigned int n = numIndents * NUM_INDENTS_PER_SPACE;
-    if (n > LENGTH) n = LENGTH;
-
-    return &pINDENT[LENGTH - n];
-}
-
-// same as getIndent but no "+" at the end
-const char* getIndentAlt(unsigned int numIndents) {
-    static const char* pINDENT = "                                        ";
-    static const unsigned int LENGTH = strlen(pINDENT);
-    unsigned int n = numIndents * NUM_INDENTS_PER_SPACE;
-    if (n > LENGTH) n = LENGTH;
-
-    return &pINDENT[LENGTH - n];
-}
-
-int dump_attribs_to_stdout(TiXmlElement* pElement, unsigned int indent) {
-    if (!pElement) return 0;
-
-    TiXmlAttribute* pAttrib = pElement->FirstAttribute();
-    int i = 0;
-    int ival;
-    double dval;
-    const char* pIndent = getIndent(indent);
-    printf("\n");
-    while (pAttrib) {
-        printf("%s%s: value=[%s]", pIndent, pAttrib->Name(), pAttrib->Value());
-
-        if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) printf(" int=%d", ival);
-        if (pAttrib->QueryDoubleValue(&dval) == TIXML_SUCCESS) printf(" d=%1.1f", dval);
-        printf("\n");
-        i++;
-        pAttrib = pAttrib->Next();
-    }
-    return i;
-}
-
-void dump_to_stdout(TiXmlNode* pParent, unsigned int indent = 0) {
-    if (!pParent) return;
-
-    TiXmlNode* pChild;
-    TiXmlText* pText;
-    int t = pParent->Type();
-    printf("%s", getIndent(indent));
-    int num;
-
-    switch (t) {
-        case TiXmlNode::TINYXML_DOCUMENT:
-            printf("Document");
-            break;
-
-        case TiXmlNode::TINYXML_ELEMENT:
-            printf("Element [%s]", pParent->Value());
-            num = dump_attribs_to_stdout(pParent->ToElement(), indent + 1);
-            switch (num) {
-                case 0:
-                    printf(" (No attributes)");
-                    break;
-                case 1:
-                    printf("%s1 attribute", getIndentAlt(indent));
-                    break;
-                default:
-                    printf("%s%d attributes", getIndentAlt(indent), num);
-                    break;
-            }
-            break;
-
-        case TiXmlNode::TINYXML_COMMENT:
-            printf("Comment: [%s]", pParent->Value());
-            break;
-
-        case TiXmlNode::TINYXML_UNKNOWN:
-            printf("Unknown");
-            break;
-
-        case TiXmlNode::TINYXML_TEXT:
-            pText = pParent->ToText();
-            printf("Text: [%s]", pText->Value());
-            break;
-
-        case TiXmlNode::TINYXML_DECLARATION:
-            printf("Declaration");
-            break;
-        default:
-            break;
-    }
-    printf("\n");
-    for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling()) {
-        dump_to_stdout(pChild, indent + 1);
-    }
+Pixel GET_COLOR(const std::string &colorName) {
+    if (colorName == "black") return COLOR_BLACK;
+    if (colorName == "red") return COLOR_RED;
+    if (colorName == "green") return COLOR_GREEN;
+    if (colorName == "blue") return COLOR_BLUE;
+    if (colorName == "cyan") return COLOR_CYAN;
+    if (colorName == "yellow") return COLOR_YELLOW;
+    if (colorName == "magenta") return COLOR_MAGENTA;
+    
+    return COLOR_WHITE;
 }
 
 Shape* readShape(TiXmlNode* pShape) {
-    if (pShape->Value() == "line") {
-        int* x1;
-        int* y1;
-        int* x2;
-        int* y2;
+    std::string shapeValue(pShape->Value());
+    if (shapeValue == "line") {
+        std::shared_ptr<int> x1;
+        std::shared_ptr<int> y1;
+        std::shared_ptr<int> x2;
+        std::shared_ptr<int> y2;
         int width = 1;
         Pixel color = COLOR_BLACK;
 
         TiXmlAttribute* pAttrib = pShape->ToElement()->FirstAttribute();
         int ival;
         while (pAttrib) {
-            if (pAttrib->Name() == "x1") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x1 = new int(ival);
-            } else if (pAttrib->Name() == "y1") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y1 = new int(ival);
-            } else if (pAttrib->Name() == "x2") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x2 = new int(ival);
-            } else if (pAttrib->Name() == "y2") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y2 = new int(ival);
-            } else if (pAttrib->Name() == "width") {
+            std::string attribName(pAttrib->Name());
+            if (attribName == "x1") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x1 = std::make_shared<int>(ival);
+            } else if (attribName == "y1") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y1 = std::make_shared<int>(ival);
+            } else if (attribName == "x2") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x2 = std::make_shared<int>(ival);
+            } else if (attribName == "y2") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y2 = std::make_shared<int>(ival);
+            } else if (attribName == "width") {
                 if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) width = ival;
-            } else if (pAttrib->Name() == "color") {
-                color = GET_COLOR(pAttrib->Value());
+            } else if (attribName == "color") {
+                color = GET_COLOR(std::string(pAttrib->Value()));
             }
 
             pAttrib = pAttrib->Next();
@@ -140,33 +58,135 @@ Shape* readShape(TiXmlNode* pShape) {
         }
 
         Shape* s = new Line(Point(*x1, *y1), Point(*x2, *y2), width, color);
-        delete x1;
-        delete y1;
-        delete x2;
-        delete y2;
         return s;
-    } else if (pShape->Value() == "polyline") {
-    } else if (pShape->Value() == "polygon") {
-    } else if (pShape->Value() == "circle") {
-        int* x;
-        int* y;
-        int* radius;
-        Pixel *fill_color;
+    } else if (shapeValue == "polyline") {
+        // if empty return null
+        if (pShape->FirstChild() == nullptr) return nullptr;
+
+        int width = 1;
+        Pixel color = COLOR_BLACK;
+
+        TiXmlAttribute* pAttrib = pShape->ToElement()->FirstAttribute();
+        int ival;
+        while (pAttrib) {
+            std::string attribName(pAttrib->Name());
+            if (attribName == "width") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) width = ival;
+            } else if (attribName == "color") {
+                color = GET_COLOR(std::string(pAttrib->Value()));;
+            }
+
+            pAttrib = pAttrib->Next();
+        }
+        Polyline *s = new Polyline(color, width);
+
+        TiXmlNode* pChild;
+        for (pChild = pShape->FirstChild(); pChild != 0; pChild = pChild->NextSibling()) {
+            if (pChild->Type() == TiXmlNode::TINYXML_ELEMENT && std::string(pChild->Value()) == "point") {
+                std::shared_ptr<int> x;
+                std::shared_ptr<int> y;
+
+                TiXmlAttribute* pAttrib = pChild->ToElement()->FirstAttribute();
+                int ival;
+                while (pAttrib) {
+                    std::string attribName(pAttrib->Name());
+                    if (attribName == "x") {
+                        if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x = std::make_shared<int>(ival);
+                    } else if (attribName == "y") {
+                        if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y = std::make_shared<int>(ival);
+                    }
+
+                    pAttrib = pAttrib->Next();
+                }
+
+                if (x == nullptr || y == nullptr) {
+                    std::cout << "Unable to create point with given parameters\n";
+                    continue;
+                }
+
+                s->addPoint(Point(*x, *y));
+            }
+        }
+        
+        return s;
+    } else if (shapeValue == "polygon") {
+        // if empty return null
+        if (pShape->FirstChild() == nullptr) return nullptr;
+
+        int width = 1;
+        Pixel stroke_color = COLOR_BLACK;
+        std::shared_ptr<Pixel> fill_color;
+
+        TiXmlAttribute* pAttrib = pShape->ToElement()->FirstAttribute();
+        int ival;
+        while (pAttrib) {
+            std::string attribName(pAttrib->Name());
+            if (attribName == "width") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) width = ival;
+            } else if (attribName == "stroke_color") {
+                stroke_color = GET_COLOR(std::string(pAttrib->Value()));
+            } else if (attribName == "fill_color") {
+                fill_color = std::make_shared<Pixel>(GET_COLOR(std::string(pAttrib->Value())));
+            }
+
+            pAttrib = pAttrib->Next();
+        }
+    
+        std::vector<Point> points;
+
+        TiXmlNode* pChild;
+        for (pChild = pShape->FirstChild(); pChild != 0; pChild = pChild->NextSibling()) {
+            if (pChild->Type() == TiXmlNode::TINYXML_ELEMENT && std::string(pChild->Value()) == "point") {
+                std::shared_ptr<int> x;
+                std::shared_ptr<int> y;
+
+                TiXmlAttribute* pAttrib = pChild->ToElement()->FirstAttribute();
+                int ival;
+                while (pAttrib) {
+                    std::string attribName(pAttrib->Name());
+                    if (attribName == "x") {
+                        if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x = std::make_shared<int>(ival);
+                    } else if (attribName == "y") {
+                        if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y = std::make_shared<int>(ival);
+                    }
+
+                    pAttrib = pAttrib->Next();
+                }
+
+                if (x == nullptr || y == nullptr) {
+                    std::cout << "Unable to create point with given parameters\n";
+                    continue;
+                }
+
+                points.push_back(Point(*x, *y));
+            }
+        }
+
+        Polygon *s = new Polygon(points, stroke_color, width);
+        if (fill_color != nullptr) s->setFillColor(*fill_color);
+        
+        return s;
+    } else if (shapeValue == "circle") {
+        std::shared_ptr<int> x;
+        std::shared_ptr<int> y;
+        std::shared_ptr<int> radius;
+        std::shared_ptr<Pixel> fill_color;
         Pixel stroke_color = COLOR_BLACK;
         
         TiXmlAttribute* pAttrib = pShape->ToElement()->FirstAttribute();
         int ival;
         while (pAttrib) {
-            if (pAttrib->Name() == "x") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x = new int(ival);
-            } else if (pAttrib->Name() == "y") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y = new int(ival);
-            } else if (pAttrib->Name() == "radius") {
-                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) radius = new int(ival);
-            } else if (pAttrib->Name() == "fill_color") {
-                fill_color = new Pixel(GET_COLOR(pAttrib->Value()));
-            } else if (pAttrib->Name() == "stroke_color") {
-                stroke_color = GET_COLOR(pAttrib->Value());
+            std::string attribName(pAttrib->Name());
+            if (attribName == "x") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) x = std::make_shared<int>(ival);
+            } else if (attribName == "y") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) y = std::make_shared<int>(ival);
+            } else if (attribName == "radius") {
+                if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) radius = std::make_shared<int>(ival);
+            } else if (attribName == "fill_color") {
+                fill_color = std::make_shared<Pixel>(GET_COLOR(std::string(pAttrib->Value())));
+            } else if (attribName == "stroke_color") {
+                stroke_color = GET_COLOR(std::string(pAttrib->Value()));
             }
 
             pAttrib = pAttrib->Next();
@@ -180,12 +200,11 @@ Shape* readShape(TiXmlNode* pShape) {
         Shape* s;
         if (fill_color == nullptr) s = new Circle(Point(*x, *y), *radius, stroke_color);
         else s = new Circle(Point(*x, *y), *radius, stroke_color, *fill_color);
-        delete x;
-        delete y;
-        delete radius;
-        if (fill_color != nullptr) delete fill_color;
+
         return s;
     }
+
+    return nullptr;
 }
 
 void addShapesToCanvas(Canvas* canvas, TiXmlNode* pXmlCanvas) {
@@ -202,12 +221,12 @@ void addShapesToCanvas(Canvas* canvas, TiXmlNode* pXmlCanvas) {
 }
 
 Canvas* createCanvas(TiXmlNode* pParent) {
-    if (!pParent) return;
+    if (!pParent) return nullptr;
 
     int t = pParent->Type();
     switch (t) {
         case TiXmlNode::TINYXML_ELEMENT:
-            if (pParent->Value() == "canvas") {
+            if (std::string(pParent->Value()) == "canvas") {
                 int height = -1;
                 int width = -1;
                 Pixel color = COLOR_WHITE;
@@ -215,12 +234,13 @@ Canvas* createCanvas(TiXmlNode* pParent) {
                 TiXmlAttribute* pAttrib = pParent->ToElement()->FirstAttribute();
                 int ival;
                 while (pAttrib) {
-                    if (pAttrib->Name() == "width") {
+                    std::string attribName(pAttrib->Name());
+                    if (attribName == "width") {
                         if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) width = ival;
-                    } else if (pAttrib->Name() == "height") {
+                    } else if (attribName == "height") {
                         if (pAttrib->QueryIntValue(&ival) == TIXML_SUCCESS) height = ival;
-                    } else if (pAttrib->Name() == "color") {
-                        color = GET_COLOR(pAttrib->Value());
+                    } else if (attribName == "color") {
+                        color = GET_COLOR(std::string(pAttrib->Value()));
                     }
 
                     pAttrib = pAttrib->Next();
@@ -233,6 +253,8 @@ Canvas* createCanvas(TiXmlNode* pParent) {
 
                 Canvas* canvas = new Canvas(width, height, color);
                 addShapesToCanvas(canvas, pParent);
+
+                return canvas;
             }
 
             break;
@@ -253,11 +275,14 @@ Canvas* createCanvas(TiXmlNode* pParent) {
 
 int main(int argc, char const* argv[]) {
     TiXmlDocument doc("example.xml");
-    if (doc.LoadFile()) {
-        dump_to_stdout(&doc);
-    } else {
-        std::cout << "dekinai\n";
+    if (!doc.LoadFile()) {
+        std::cout << "Cannot parse the file\n";
+        return 1;
     }
+    
+    Canvas *canvas = createCanvas(&doc);
+    canvas->writeToFile("pequeno");
+    delete canvas;
 
     // Canvas c(100, 100);
     // // c.setPixel(0,0,Pixel(255,0,0));

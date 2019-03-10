@@ -3,25 +3,28 @@
 #include <list>
 #include "line.h"
 
-Polygon::Polygon(const std::vector<Point> _points, const Pixel &_stroke_color,
-                 const Pixel &_fill_color, const int &_stroke_width)
-    : m_points(_points), stroke_color(_stroke_color), fill_color(_fill_color), stroke_width(_stroke_width) {}
+Polygon::Polygon(const std::vector<Point> _points, const Pixel &_stroke_color, const int &_stroke_width)
+    : m_points(_points), stroke_color(_stroke_color), stroke_width(_stroke_width) {}
 
 Polygon::Polygon(const Point &p1, const Point &p2, const Point &p3, const Pixel &_stroke_color,
-                 const Pixel &_fill_color, const int &_stroke_width)
-    : stroke_color(_stroke_color), fill_color(_fill_color), stroke_width(_stroke_width) {
+                 const int &_stroke_width)
+    : stroke_color(_stroke_color), stroke_width(_stroke_width) {
     m_points.push_back(p1);
     m_points.push_back(p2);
     m_points.push_back(p3);
 }
 
 Polygon::Polygon(const Point &p1, const Point &p2, const Point &p3, const Point &p4,
-                 const Pixel &_stroke_color, const Pixel &_fill_color, const int &_stroke_width)
-    : stroke_color(_stroke_color), fill_color(_fill_color), stroke_width(_stroke_width) {
+                 const Pixel &_stroke_color, const int &_stroke_width)
+    : stroke_color(_stroke_color), stroke_width(_stroke_width) {
     m_points.push_back(p1);
     m_points.push_back(p2);
     m_points.push_back(p3);
     m_points.push_back(p4);
+}
+
+void Polygon::setFillColor(const Pixel &color) {
+    fill_color = std::make_shared<Pixel>(color);
 }
 
 void Polygon::addPoint(const Point &p) { m_points.push_back(p); }
@@ -29,7 +32,7 @@ void Polygon::addPoint(const Point &p) { m_points.push_back(p); }
 void Polygon::draw(Canvas *canvas) {
     scanFill(canvas);
 
-    if (stroke_color != fill_color) {
+    if (fill_color == nullptr || stroke_color != *fill_color) {
         for (auto i = 0u; i < m_points.size(); i++) {
             auto line = Line(m_points[i], m_points[(i + 1) % m_points.size()], stroke_width, stroke_color);
             canvas->draw(line);
@@ -62,6 +65,7 @@ std::vector<Edge> Polygon::getEdges() {
 }
 
 void Polygon::scanFill(Canvas *canvas) {
+    if (fill_color == nullptr || m_points.empty()) return;
     std::cout << "Starting scanFill\n";
 
     std::vector<Edge> et[canvas->getHeight()];
@@ -101,7 +105,7 @@ void Polygon::scanFill(Canvas *canvas) {
             auto &e2 = *it;
 
             for (auto i = e1.x + 1; i <= e2.x; i++) {
-                canvas->setPixel(Point(i, currentY), fill_color);
+                canvas->setPixel(Point(i, currentY), *fill_color);
             }
         }
 

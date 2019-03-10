@@ -16,8 +16,8 @@ class Circle : public Shape {
     void draw2(Canvas *canvas, const std::function<void(int, int)> &drawPoint);
 
    public:
-   Circle(const Point &_center, const int &_radius, const Pixel &stroke_color);
+    Circle(const Point &_center, const int &_radius, const Pixel &stroke_color);
     Circle(const Point &_center, const int &_radius, const Pixel &stroke_color,
-           const Pixel &fill_color = Pixel(255, 255, 255));
+           const Pixel &fill_color);
     Circle(const Point &_center, const int &_radius);
 };

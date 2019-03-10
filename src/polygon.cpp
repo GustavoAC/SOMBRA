@@ -4,20 +4,20 @@
 #include "line.h"
 
 Polygon::Polygon(const std::vector<Point> _points, const Pixel &_stroke_color,
-                 const Pixel &_fill_color)
-    : m_points(_points), stroke_color(_stroke_color), fill_color(_fill_color) {}
+                 const Pixel &_fill_color, const int &_stroke_width)
+    : m_points(_points), stroke_color(_stroke_color), fill_color(_fill_color), stroke_width(_stroke_width) {}
 
 Polygon::Polygon(const Point &p1, const Point &p2, const Point &p3, const Pixel &_stroke_color,
-                 const Pixel &_fill_color)
-    : stroke_color(_stroke_color), fill_color(_fill_color) {
+                 const Pixel &_fill_color, const int &_stroke_width)
+    : stroke_color(_stroke_color), fill_color(_fill_color), stroke_width(_stroke_width) {
     m_points.push_back(p1);
     m_points.push_back(p2);
     m_points.push_back(p3);
 }
 
 Polygon::Polygon(const Point &p1, const Point &p2, const Point &p3, const Point &p4,
-                 const Pixel &_stroke_color, const Pixel &_fill_color)
-    : stroke_color(_stroke_color), fill_color(_fill_color) {
+                 const Pixel &_stroke_color, const Pixel &_fill_color, const int &_stroke_width)
+    : stroke_color(_stroke_color), fill_color(_fill_color), stroke_width(_stroke_width) {
     m_points.push_back(p1);
     m_points.push_back(p2);
     m_points.push_back(p3);
@@ -31,7 +31,7 @@ void Polygon::draw(Canvas *canvas) {
 
     if (stroke_color != fill_color) {
         for (auto i = 0u; i < m_points.size(); i++) {
-            auto line = Line(m_points[i], m_points[(i + 1) % m_points.size()], 1, stroke_color);
+            auto line = Line(m_points[i], m_points[(i + 1) % m_points.size()], stroke_width, stroke_color);
             canvas->draw(line);
         }
     }

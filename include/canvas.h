@@ -15,6 +15,8 @@ class Canvas {
     Pixel m_backgroundColor;
     Pixel& getPixel(int x, int y);
   
+    void applyAntiAlias();
+
   public:
   	Canvas(int _width, int _height);
     Canvas(int _width, int _height, Pixel m_backgroundColor);
@@ -25,5 +27,5 @@ class Canvas {
     void floodFill(int x, int y, const Pixel &newColor, const Pixel &limitColor);
     inline int getWidth() const { return m_width; }
     inline int getHeight() const { return m_height; }
-    void writeToFile(const std::string &filename);
+    void writeToFile(const std::string &filename, const bool &antiAlias = true);
 };

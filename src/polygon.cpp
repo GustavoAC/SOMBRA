@@ -28,9 +28,12 @@ void Polygon::addPoint(const Point &p) { m_points.push_back(p); }
 
 void Polygon::draw(Canvas *canvas) {
     scanFill(canvas);
-    for (auto i = 0u; i < m_points.size(); i++) {
-        auto line = Line(m_points[i], m_points[(i + 1) % m_points.size()], stroke_color);
-        canvas->draw(line);
+
+    if (stroke_color != fill_color) {
+        for (auto i = 0u; i < m_points.size(); i++) {
+            auto line = Line(m_points[i], m_points[(i + 1) % m_points.size()], 1, stroke_color);
+            canvas->draw(line);
+        }
     }
 }
 

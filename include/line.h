@@ -8,14 +8,15 @@ private:
 	Point m_start;
 	Point m_end;
 	Pixel m_color;
+	int m_width;
 
 	void drawDDA(Canvas *canvas);
 	void drawBresenham(Canvas *canvas);
 	void draw(Canvas *canvas);
+	void drawThickLine(Canvas *canvas);
 
 public:
-	Line(const Point &_start, const Point &_end, const Pixel &_color);
-	Line(const Point &_start, const Point &_end);
+	Line(const Point &_start, const Point &_end, const int &_width = 1, const Pixel &_color = Pixel(0,0,0));
 	
 	inline bool isHorizontal() const;
 	inline bool isVertical() const;

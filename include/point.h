@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class Point {
 private:
@@ -25,5 +26,9 @@ public:
 
 	int getY() const {
 		return points[1];
+	}
+
+	friend std::ostream & operator<<(std::ostream &os, const Point& p) {
+		return os << "(" << p.getX() << ", " << p.getY() << ")";
 	}
 };

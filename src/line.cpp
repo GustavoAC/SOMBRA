@@ -3,13 +3,17 @@
 #include <functional>
 #include <iostream>
 #include "canvas.h"
+#include "polygon.h"
 
-Line::Line(const Point &_start, const Point &_end, const Pixel &_color)
-    : m_start(_start), m_end(_end), m_color(_color) {}
-
-Line::Line(const Point &_start, const Point &_end) : Line(_start, _end, Pixel(0, 0, 0)) {}
+Line::Line(const Point &_start, const Point &_end, const int &_width, const Pixel &_color)
+    : m_start(_start), m_end(_end), m_color(_color), m_width(_width) {}
 
 void Line::draw(Canvas *canvas) {
+    if (m_width > 1) {
+        drawThickLine(canvas);
+        return;
+    }
+
     std::cout << "Drawing line...\n\n";
     // if (isHorizontal()) {
     //     int step = (m_start.getX() < m_end.getX()) ? 1 : -1;
@@ -32,6 +36,55 @@ void Line::draw(Canvas *canvas) {
         canvas->setPixel(m_end, m_color);
     } else {
         drawBresenham(canvas);
+    }
+}
+
+void Line::drawThickLine(Canvas *canvas) {
+    int deltaX = m_end.getX() - m_start.getX();
+    int deltaY = m_end.getY() - m_start.getY();
+
+    // inverted since you want the m is also inverted
+    bool isXMaster = (std::abs(deltaX) < std::abs(deltaY));
+
+    int masterNegDeviation = -m_width / 2;
+    int masterPosDeviation = (m_width - 1) / 2;
+
+    float invertedM;
+    if (!isHorizontal() && !isVertical()) invertedM = -1 * deltaY / (float)deltaX;
+
+    int slaveNegDeviation = 0;
+    int slavePosDeviation = 0;
+
+    if (isXMaster) {
+        // Y is slave
+        if (!isVertical()) {
+            slaveNegDeviation = std::round(masterNegDeviation * invertedM);
+            slavePosDeviation = std::round(masterPosDeviation * invertedM);
+        }
+    } else {
+        // X is slave
+        if (!isHorizontal()) {
+            slaveNegDeviation = std::round(masterNegDeviation / invertedM);
+            slavePosDeviation = std::round(masterPosDeviation / invertedM);
+        }
+    }
+
+    if (isXMaster) {
+        Point startPos(m_start.getX() + masterPosDeviation, m_start.getY() + slavePosDeviation);
+        Point startNeg(m_start.getX() + masterNegDeviation, m_start.getY() + slaveNegDeviation);
+        Point endPos(m_end.getX() + masterPosDeviation, m_end.getY() + slavePosDeviation);
+        Point endNeg(m_end.getX() + masterNegDeviation, m_end.getY() + slaveNegDeviation);
+
+        Polygon p(startPos, endPos, endNeg, startNeg, m_color, m_color);
+        canvas->draw(p);
+    } else {
+        Point startPos(m_start.getX() + slavePosDeviation, m_start.getY() + masterPosDeviation);
+        Point startNeg(m_start.getX() + slaveNegDeviation, m_start.getY() + masterNegDeviation);
+        Point endPos(m_end.getX() + slavePosDeviation, m_end.getY() + masterPosDeviation);
+        Point endNeg(m_end.getX() + slaveNegDeviation, m_end.getY() + masterNegDeviation);
+
+        Polygon p(startPos, endPos, endNeg, startNeg, m_color, m_color);
+        canvas->draw(p);
     }
 }
 
@@ -106,9 +159,9 @@ void Line::drawBresenham(Canvas *canvas) {
 
     if (deltaSlave < 0) deltaSlave *= -1;
     if (deltaMaster < 0) deltaMaster *= -1;
-    
+
     // Initialize values
-    int p = ((isXMaster)? 2 : -2) * deltaSlave - deltaMaster;
+    int p = ((isXMaster) ? 2 : -2) * deltaSlave - deltaMaster;
     int master = getMasterParam(m_start);
     int slave = getSlaveParam(m_start);
 

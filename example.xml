@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<canvas width="100" height="100" color="white">
+	<line x1="20" y1="20" x2="30" y2="90" width="2" color="black"/>
+	<circle x="20" y="20" radius="4" fill_color="black" stroke_color="black"/>
+	<polyline width="2" color="black">
+		<point x="20" y="30"/>
+		<point x="30" y="60"/>
+		<point x="80" y="30"/>
+	</polyline>
+	<polygon width="2" stroke_color="black" fill_color="green">
+		<point x="20" y="80"/>
+		<point x="30" y="50"/>
+		<point x="80" y="80"/>
+	</polygon>
+</canvas>

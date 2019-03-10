@@ -25,3 +25,18 @@ class Pixel {
 
     inline bool operator!=(const Pixel& rhs) { return !(*this == rhs); }
 };
+
+static const Pixel COLOR_BLACK = Pixel(0,0,0);
+static const Pixel COLOR_RED = Pixel(255,0,0);
+static const Pixel COLOR_GREEN = Pixel(0,255,0);
+static const Pixel COLOR_BLUE = Pixel(0,0,255);
+static const Pixel COLOR_WHITE = Pixel(255,255,255);
+
+Pixel GET_COLOR(const std::string &colorName) {
+    if (colorName == "black") return COLOR_BLACK;
+    if (colorName == "red") return COLOR_RED;
+    if (colorName == "green") return COLOR_GREEN;
+    if (colorName == "blue") return COLOR_BLUE;
+    
+    return COLOR_WHITE;
+}

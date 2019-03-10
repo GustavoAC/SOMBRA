@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <memory>
 #include "pixel.h"
 #include "point.h"
 #include "shape.h"
@@ -9,12 +10,13 @@ class Circle : public Shape {
     Point m_center;
     int m_radius;
     Pixel stroke_color;
-    Pixel fill_color;
+    std::shared_ptr<Pixel> fill_color;
 
     void draw(Canvas *canvas);
     void draw2(Canvas *canvas, const std::function<void(int, int)> &drawPoint);
 
    public:
+   Circle(const Point &_center, const int &_radius, const Pixel &stroke_color);
     Circle(const Point &_center, const int &_radius, const Pixel &stroke_color,
            const Pixel &fill_color = Pixel(255, 255, 255));
     Circle(const Point &_center, const int &_radius);

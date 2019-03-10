@@ -10,6 +10,11 @@ Canvas::Canvas(int _width, int _height, Pixel _backgroundColor)
     clear();
 }
 
+void Canvas::setBackgroundColor(const Pixel &_backgroundColor) {
+    m_backgroundColor = _backgroundColor;
+    clear();
+}
+
 // Add memset for white case
 void Canvas::clear() {
     for (int i = 0; i < m_width * m_height; i++) (*canvas)[i] = m_backgroundColor;

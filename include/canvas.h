@@ -19,8 +19,9 @@ class Canvas {
 
   public:
   	Canvas(int _width, int _height);
-    Canvas(int _width, int _height, Pixel m_backgroundColor);
+    Canvas(int _width, int _height, Pixel _backgroundColor);
 
+    void setBackgroundColor(const Pixel &_backgroundColor);
     void clear();
     void draw(Shape &shape);
     void setPixel(const Point &point, const Pixel &p);

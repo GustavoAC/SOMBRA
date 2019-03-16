@@ -14,12 +14,12 @@ Circle::Circle(const Point &_center, const int &_radius) : Circle(_center, _radi
 void Circle::draw(Canvas *canvas) {
     std::cout << "Drawing Circle...\n";
     draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() + x, m_center.getY() + y), stroke_color);});
-    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getY() + y, m_center.getX() + x), stroke_color);});
-    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getY() + y, m_center.getX() - x), stroke_color);});
+    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() + y, m_center.getY() + x), stroke_color);});
+    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() + y, m_center.getY() - x), stroke_color);});
     draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() + x, m_center.getY() - y), stroke_color);});
     draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() - x, m_center.getY() - y), stroke_color);});
-    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getY() - y, m_center.getX() - x), stroke_color);});
-    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getY() - y, m_center.getX() + x), stroke_color);});
+    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() - y, m_center.getY() - x), stroke_color);});
+    draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() - y, m_center.getY() + x), stroke_color);});
     draw2(canvas, [this, canvas](const int &x, const int &y) {canvas->setPixel(Point(m_center.getX() - x, m_center.getY() + y), stroke_color);});
 
     if (fill_color.get() != nullptr) canvas->floodFill(m_center.getX(), m_center.getY(), *fill_color, stroke_color);

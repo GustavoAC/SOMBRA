@@ -6,7 +6,7 @@ Canvas::Canvas(int _width, int _height) : Canvas(_width, _height, Pixel(255, 255
 
 Canvas::Canvas(int _width, int _height, Pixel _backgroundColor)
     : m_width(_width), m_height(_height), m_backgroundColor(_backgroundColor) {
-    canvas = std::make_shared<Pixel *>(new Pixel[_width * _height]);
+    canvas = std::shared_ptr<Pixel>(new Pixel[_width * _height]);
     clear();
 }
 
@@ -17,7 +17,7 @@ void Canvas::setBackgroundColor(const Pixel &_backgroundColor) {
 
 // Add memset for white case
 void Canvas::clear() {
-    for (int i = 0; i < m_width * m_height; i++) (*canvas)[i] = m_backgroundColor;
+    for (int i = 0; i < m_width * m_height; i++) canvas.get()[i] = m_backgroundColor;
 }
 
 void Canvas::draw(Shape &shape) { shape.draw(this); }
@@ -38,10 +38,10 @@ void Canvas::setPixel(const Point &point, const Pixel &p) {
     //   << ") with color (" << (int)p.getR() << ", " << (int)p.getG() << ", " << (int)p.getB()
     //   << ")\n";
     if (point.getX() < m_width && point.getX() >= 0 && point.getY() < m_height && point.getY() >= 0)
-        (*canvas)[point.getY() * m_width + point.getX()] = p;
+        canvas.get()[point.getY() * m_width + point.getX()] = p;
 }
 
-Pixel &Canvas::getPixel(int x, int y) { return (*canvas)[y * m_width + x]; }
+Pixel &Canvas::getPixel(int x, int y) { return canvas.get()[y * m_width + x]; }
 
 void Canvas::writeToFile(const std::string &filename, const bool &antiAlias) {
     if (antiAlias) applyAntiAlias();
@@ -96,5 +96,5 @@ void Canvas::applyAntiAlias() {
         }
     }
 
-    canvas = std::make_shared<Pixel *>(new_image);
+    canvas = std::shared_ptr<Pixel>(new_image);
 }

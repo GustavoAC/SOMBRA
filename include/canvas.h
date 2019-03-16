@@ -10,7 +10,7 @@ class Canvas {
   private:
   	int m_width;
   	int m_height;
-  	std::shared_ptr<Pixel*> canvas;
+  	std::shared_ptr<Pixel> canvas;
 
     Pixel m_backgroundColor;
     Pixel& getPixel(int x, int y);

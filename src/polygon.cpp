@@ -104,9 +104,8 @@ void Polygon::scanFill(Canvas *canvas) {
             auto &e1 = *it++;
             auto &e2 = *it;
 
-            for (auto i = e1.x + 1; i <= e2.x; i++) {
-                canvas->setPixel(Point(i, currentY), *fill_color);
-            }
+            if (e1.x < e2.x) for (auto i = e1.x; i <= e2.x; i++) canvas->setPixel(Point(i, currentY), *fill_color);
+            else for (auto i = e2.x; i <= e1.x; i++) canvas->setPixel(Point(i, currentY), *fill_color);
         }
 
         // Update Y and remove old edges

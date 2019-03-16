@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 
+//! Represents a set of x,y coordinates
 class Point {
 private:
 	int points[2];

@@ -8,6 +8,7 @@
 #include "point.h"
 #include "shape.h"
 
+//! Represents a polygon shape
 class Polygon : public Shape {
    private:
     std::vector<Point> m_points;
@@ -27,7 +28,12 @@ class Polygon : public Shape {
     Polygon(const Point &p1, const Point &p2, const Point &p3, const Point &p4,
             const Pixel &_stroke_color = Pixel(0, 0, 0), const int &_stroke_width = 1);
     
+    //! Sets fill color of the polygon
     void setFillColor(const Pixel &color);
+
+    //! Adds a new point after the last current point of the polygon
     void addPoint(const Point &p);
+
+    //! Gets two points which, together, envelop the polygon
     std::pair<Point, Point> getBoundingBox();
 };

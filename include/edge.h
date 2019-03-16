@@ -1,7 +1,8 @@
-#include <numeric>
 #include <cmath>
+#include <numeric>
 #include "point.h"
 
+//! Represents the edge of a Polygon. Used in the scan-line algorithm
 class Edge {
    public:
     int minY;
@@ -37,9 +38,9 @@ class Edge {
         }
     }
 
+    //! Updates X to a new point as if the Y was increased by 1
     void updateX() {
         if (inv_m_whole == 0 && inv_m_remains == 0) return;
-        // std::cout << "m_whole " << inv_m_whole << ", m_remains " << inv_m_remains << ", m_deno " << inv_m_denominator << ", xwhole " << x << ", xrema " << x_remains << "\n";
 
         x += inv_m_whole;
         x_remains += inv_m_remains;

@@ -3,6 +3,7 @@
 
 using color_t = unsigned char;
 
+//! Represents a colored pixel on the canvas, smallest point of an image
 class Pixel {
    private:
     color_t m_colors[3];

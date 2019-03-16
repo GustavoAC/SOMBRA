@@ -2,6 +2,10 @@
 
 class Canvas;
 
+/**
+ * @brief
+ * Interface representing any generic shape. All shapes must implement this interface to be drawn on the Canvas
+ */
 class Shape {
    public:
     virtual ~Shape() {}

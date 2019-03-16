@@ -5,6 +5,10 @@
 #include "point.h"
 #include "shape.h"
 
+/**
+ * Represents the circle shape
+ */
+
 class Circle : public Shape {
    private:
     Point m_center;

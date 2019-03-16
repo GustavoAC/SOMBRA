@@ -5,9 +5,7 @@
 #include "point.h"
 #include "shape.h"
 
-/**
- * Represents the circle shape
- */
+//! Represents the circle shape
 
 class Circle : public Shape {
    private:

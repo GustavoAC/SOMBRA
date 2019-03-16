@@ -6,9 +6,7 @@
 #include "point.h"
 #include "shape.h"
 
-/**
- * Class representing the canvas object in which the objects are drawn
- */
+//! Class representing the canvas object in which the objects are drawn
 
 class Canvas {
   private:

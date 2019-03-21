@@ -65,13 +65,13 @@ void Canvas::applyAntiAlias() {
 
     // fill borders
     for (int i = 0; i < m_width; i++) {
-        new_image[i * m_width + 0] = getPixel(0, i);
-        new_image[i * m_width + (m_height - 1)] = getPixel(m_height - 1, i);
+        new_image[0 * m_width + i] = getPixel(i, 0);
+        new_image[(m_height - 1) * m_width + i] = getPixel(i, m_height - 1);
     }
 
     for (int i = 0; i < m_height; i++) {
-        new_image[0 * m_width + i] = getPixel(i, 0);
-        new_image[(m_width - 1) * m_width + i] = getPixel(i, m_width - 1);
+        new_image[i * m_width + 0] = getPixel(0, i);
+        new_image[i * m_width + (m_height - 1)] = getPixel(m_height - 1, i);
     }
 
     // Apply convolution
